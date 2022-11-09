@@ -58,6 +58,29 @@ public class QwertyPocOpenpageTest {
         }
     }
 
+    /**
+     * Fail loading css, take screenshot
+     */
+    @Test
+    public void interceptNetwork() {
+        try (Playwright playwright = Playwright.create()) {
+            Browser browser = playwright.webkit().launch();
+            BrowserContext context = browser.newContext();
+            Page page = context.newPage();
+            page.route("**", route -> {
+                if("https://r9w2g9k2.rocketcdn.me/wp-content/plugins/wp-job-openings/assets/css/style.min.css?ver=3.3.1".equals(route.request().url())){
+                    route.request().failure();
+                    System.out.println(route.request().url());
+                } else {
+                    route.resume();
+                }
+            });
+            page.navigate("https://www.qualityminds.com/");
+            page.screenshot(new Page.ScreenshotOptions().setPath(Paths.get("target/fullscreenStyleLoadingFail.png")));
+        }
+    }
+
+
 
 }
 
